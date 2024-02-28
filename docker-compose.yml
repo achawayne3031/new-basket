@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+ 
+  # Application Service
+  basket_service_app:
+    build:
+      args:
+        user: achawayne
+        uid: 4000
+      context: .
+      dockerfile: NewBasketService/Dockerfile
+    container_name: basket_service_app
+    image: basket_service_app
+    restart: unless-stopped
+    working_dir: /NewBasketService/var/www/
+    env_file:
+      - NewBasketService/.env
+    volumes:
+      - ./NewBasketService:/var/www/
+    networks:
+      - service_app
+
+  
+    
+  nginx:
+    image: nginx:alpine
+    container_name: new-basket-service-app-nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./NewBasketService:/NewBasketServicevar/www
+      - ./NewBasketService/conf/nginx:/NewBasketService/etc/nginx/conf.d
+    networks:
+      - service_app
+  
+   
+networks:
+  service_app:
+    driver: bridge
+
+  
+  

@@ -9,6 +9,11 @@ ENV GID=${GID}
 # MacOS staff group's gid is 20, so is the dialout group in alpine linux. We're not using it, let's just remove it.
 RUN delgroup dialout
 
+
+# Set working directory
+WORKDIR /var/www/html
+
+
 RUN addgroup -g ${GID} --system basketNetwork
 RUN adduser -G basketNetwork --system -D -s /bin/sh -u ${UID} basketNetwork
 RUN sed -i "s/user  nginx/user basketNetwork/g" /etc/nginx/nginx.conf
@@ -17,4 +22,8 @@ ADD ./nginx/default.conf /etc/nginx/conf.d/
 
 RUN mkdir -p /var/www/html
 RUN chown -R ${UID}:${GID} /var/www/html
+
+# COPY . /var/www/html/
+
+RUN chown -R root:root .
 

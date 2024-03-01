@@ -76,7 +76,7 @@ services:
         - GID=${GID:-1000}
     volumes:
       - ./NewBasketService:/var/www/html:delegated
-    entrypoint: [ 'php', '/var/www/html/artisan' ]
+    entrypoint: [ 'php', '/var/www/html/artisan', 'php artisan listen' ]
     networks:
       - basketNetwork
 

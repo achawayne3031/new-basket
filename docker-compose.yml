@@ -16,6 +16,8 @@ services:
       - "8001:80"
     volumes:
       - ./NewBasketService:/var/www/html:delegated
+    env_file:
+      - ./NewBasketService/.env
     depends_on:
       - php
     networks:

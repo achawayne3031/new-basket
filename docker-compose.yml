@@ -1,44 +1,81 @@
-version: '3.8'
+version: '3'
+
+networks:
+  basketNetwork:
+
 
 services:
- 
-  # Application Service
-  basket_service_app:
+  app:
     build:
+      context: ./dockerfiles
+      dockerfile: nginx.dockerfile
       args:
-        user: achawayne
-        uid: 4000
-      context: .
-      dockerfile: NewBasketService/Dockerfile
-    container_name: basket_service_app
-    image: basket_service_app
-    restart: unless-stopped
-    working_dir: /NewBasketService/var/www/
-    env_file:
-      - NewBasketService/.env
-    volumes:
-      - ./NewBasketService:/var/www/
-    networks:
-      - service_app
-
-  
-    
-  nginx:
-    image: nginx:alpine
-    container_name: new-basket-service-app-nginx
-    restart: unless-stopped
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
     ports:
-      - 8000:80
+      - "80:80"
     volumes:
-      - ./NewBasketService:/NewBasketServicevar/www
-      - ./NewBasketService/conf/nginx:/NewBasketService/etc/nginx/conf.d
+      - ./NewBasketService:/var/www/html:delegated
+    depends_on:
+      - php
     networks:
-      - service_app
-  
-   
-networks:
-  service_app:
-    driver: bridge
+      - basketNetwork
+
+  php:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./NewBasketService:/var/www/html:delegated
+    networks:
+      - basketNetwork
 
   
+
+  composer:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    volumes:
+      - ./NewBasketService:/var/www/html
+    depends_on:
+      - php
+    entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+    networks:
+      - basketNetwork
+
+  npm:
+    image: node:current-alpine
+    volumes:
+      - ./NewBasketService:/var/www/html
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "5173:5173"
+    working_dir: /var/www/html
+    entrypoint: [ 'npm' ]
+    networks:
+      - basketNetwork
+
+  artisan:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+    volumes:
+      - ./NewBasketService:/var/www/html:delegated
+    entrypoint: [ 'php', '/var/www/html/artisan' ]
+    networks:
+      - basketNetwork
+
   

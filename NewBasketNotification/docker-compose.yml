@@ -1,0 +1,91 @@
+version: '3'
+
+networks:
+  basketNotification:
+
+services:
+
+  notification:
+    build:
+      context: ./dockerfiles
+      dockerfile: nginx.dockerfile
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
+    ports:
+      - "8002:80"
+    volumes:
+      - ./:/var/www/html:delegated
+    env_file:
+      - path: ./.env
+    depends_on:
+      - php
+    networks:
+      - basketNotification
+
+
+  php:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
+    ports:
+      - "9001:9000"
+    volumes:
+      - ./:/var/www/html:delegated
+
+    networks:
+      - basketNotification
+
+
+  composer:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - php
+    entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+    networks:
+      - basketNotification
+
+
+
+  npm:
+    image: node:current-alpine
+    volumes:
+      - ./:/var/www/html
+
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+      - "5173:5173"
+    working_dir: /var/www/html
+    entrypoint: [ 'npm' ]
+    networks:
+      - basketNotification
+
+
+
+
+  artisan:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
+    volumes:
+      - ./:/var/www/html:delegated
+    entrypoint: [ 'php', '/var/www/html/artisan', 'queue:listen']
+
+    networks:
+      - basketNotification
+
+

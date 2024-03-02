@@ -18,10 +18,9 @@ ADD ./nginx/default.conf /etc/nginx/conf.d/
 
 RUN mkdir -p /var/www/html
 
-COPY . /var/www/html/
 
-RUN chown -R $USER:www-data /var/www/html
-RUN chmod -R 775 /var/www/html/
+# RUN chown -R root:www-data /var/www/html
+# RUN chmod -R 775 /var/www/html/
 
 
 

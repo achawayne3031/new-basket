@@ -3,81 +3,86 @@ version: '3'
 networks:
   basketNetwork:
 
-
 services:
   app:
     build:
       context: ./dockerfiles
       dockerfile: nginx.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
     ports:
       - "8001:80"
     volumes:
-      - ./NewBasketService:/var/www/html:delegated
+      - ./:/var/www/html:delegated
     env_file:
-      - ./NewBasketService/.env
+      - path: ./.env
     depends_on:
       - php
     networks:
       - basketNetwork
 
+
+
   php:
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
     ports:
       - "9000:9000"
     volumes:
-      - ./NewBasketService:/var/www/html:delegated
+      - ./:/var/www/html:delegated
     networks:
       - basketNetwork
-
-  
 
   composer:
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
     volumes:
-      - ./NewBasketService:/var/www/html
+      - ./:/var/www/html
     depends_on:
       - php
     entrypoint: [ 'composer', '--ignore-platform-reqs' ]
     networks:
       - basketNetwork
 
+
   npm:
     image: node:current-alpine
     volumes:
-      - ./NewBasketService:/var/www/html
+      - ./:/var/www/html
+
     ports:
-      - "3000:3000"
-      - "3001:3001"
-      - "5173:5173"
+      - "3003:3000"
+      - "3004:3001"
+      - "5175:5173"
     working_dir: /var/www/html
     entrypoint: [ 'npm' ]
     networks:
       - basketNetwork
 
+
   artisan:
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
-      args:
-        - UID=${UID:-1000}
-        - GID=${GID:-1000}
+      # args:
+      #   - UID=${UID:-1000}
+      #   - GID=${GID:-1000}
     volumes:
-      - ./NewBasketService:/var/www/html:delegated
-    entrypoint: [ 'php', '/var/www/html/artisan', 'php artisan listen' ]
+      - ./:/var/www/html:delegated
+    # entrypoint: [ 'php', '/var/www/html/artisan', 'cache:clear', 'config:clear', 'config:cache', 'queue:listen']
+    entrypoint: [ 'php', '/var/www/html/artisan', 'queue:listen']
+
     networks:
       - basketNetwork
 
-  
+
+

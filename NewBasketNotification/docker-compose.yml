@@ -9,15 +9,19 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: nginx.dockerfile
-      # args:
-      #   - UID=${UID:-1000}
-      #   - GID=${GID:-1000}
+
     ports:
       - "8002:80"
     volumes:
       - ./:/var/www/html:delegated
     env_file:
       - path: ./.env
+    environment:
+      RABBITMQ_HOST: rattlesnake-01.rmq.cloudamqp.com
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: xsmlgpag
+      RABBITMQ_PASSWORD: GTwTKX8CNerXVpzKyByjGUbAz32Qqz-e
+      RABBITMQ_VHOST: xsmlgpag
     depends_on:
       - php
     networks:
@@ -28,9 +32,7 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
-      # args:
-      #   - UID=${UID:-1000}
-      #   - GID=${GID:-1000}
+
     ports:
       - "9001:9000"
     volumes:
@@ -44,9 +46,7 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
-      # args:
-      #   - UID=${UID:-1000}
-      #   - GID=${GID:-1000}
+
     volumes:
       - ./:/var/www/html
     depends_on:
@@ -54,8 +54,6 @@ services:
     entrypoint: [ 'composer', '--ignore-platform-reqs' ]
     networks:
       - basketNotification
-
-
 
   npm:
     image: node:current-alpine
@@ -78,9 +76,7 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: php.dockerfile
-      # args:
-      #   - UID=${UID:-1000}
-      #   - GID=${GID:-1000}
+
     volumes:
       - ./:/var/www/html:delegated
     entrypoint: [ 'php', '/var/www/html/artisan', 'queue:listen']

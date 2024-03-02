@@ -34,9 +34,9 @@ class UserCreated implements ShouldQueue
 
         Log::info($this->data);
 
-        Notifications::create([
-            'name' => $this->data['first_name'],
-            'email' => $this->data['email'],
-        ]);
+        // Notifications::create([
+        //     'name' => $this->data['first_name'],
+        //     'email' => $this->data['email'],
+        // ]);
     }
 }

@@ -17,9 +17,13 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request = $request->all();
-        $user = $this->model->create($request);
+        \Log::info($request);
+
+        \App\Jobs\UserCreated::dispatch($request);
+
+        // $user = $this->model->create($request);
         return response()->json([
-            'data' => $user,
+            'data' => $request,
             'message' => 'User added successfully',
         ]);
     }

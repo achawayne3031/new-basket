@@ -19,9 +19,9 @@ class UserController extends Controller
         $request = $request->all();
         \Log::info($request);
 
-        \App\Jobs\UserCreated::dispatch($request);
+        /// \App\Jobs\UserCreated::dispatch($request);
 
-        // $user = $this->model->create($request);
+        $user = $this->model->create($request);
         return response()->json([
             'data' => $request,
             'message' => 'User added successfully',

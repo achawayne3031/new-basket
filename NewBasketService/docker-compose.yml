@@ -64,10 +64,9 @@ services:
     depends_on:
       - php
     entrypoint: [ 'composer', '--ignore-platform-reqs' ]
+    command: sh -c "composer install --ignore-platform-reqs && php artisan key:generate"
     networks:
       - laravel
-
-
 
 
   npm:

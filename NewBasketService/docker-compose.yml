@@ -26,6 +26,13 @@ services:
       RABBITMQ_USER: xsmlgpag
       RABBITMQ_PASSWORD: GTwTKX8CNerXVpzKyByjGUbAz32Qqz-e
       RABBITMQ_VHOST: xsmlgpag
+      DB_CONNECTION: mysql
+      DB_HOST: localhost
+      DB_PORT: 3306
+      DB_DATABASE: new_basket
+      DB_USERNAME: root
+      DB_PASSWORD:
+
 
 
 
